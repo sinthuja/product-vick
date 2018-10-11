@@ -52,8 +52,9 @@ func CreateGatewayDeployment(gateway *v1alpha1.Gateway, gatewayConfig config.Gat
 				Spec: corev1.PodSpec{
 					InitContainers: []corev1.Container{
 						{
-							Name:  "cell-gateway-init",
-							Image: gatewayConfig.InitImage,
+							Name:            "cell-gateway-init",
+							Image:           gatewayConfig.InitImage,
+							ImagePullPolicy: "IfNotPresent",
 							VolumeMounts: []corev1.VolumeMount{
 								{
 									Name:      configVolumeName,
@@ -106,8 +107,7 @@ func CreateGatewayDeployment(gateway *v1alpha1.Gateway, gatewayConfig config.Gat
 						{
 							Name: gatewayBuildVolumeName,
 							VolumeSource: corev1.VolumeSource{
-								EmptyDir: &corev1.EmptyDirVolumeSource{
-								},
+								EmptyDir: &corev1.EmptyDirVolumeSource{},
 							},
 						},
 					},
