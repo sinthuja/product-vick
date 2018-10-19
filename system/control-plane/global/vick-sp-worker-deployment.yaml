@@ -95,7 +95,7 @@ spec:
 
         volumeMounts:
         - name: sp-worker-conf
-          mountPath: "/home/wso2carbon/wso2-config-volume/worker/conf/"
+          mountPath: "/home/wso2carbon/wso2-config-volume/conf/worker"
         - name: sp-worker-bin
           mountPath: "/home/wso2carbon/wso2-config-volume/worker/bin/"
         - name: sp-worker-siddhi
