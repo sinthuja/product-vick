@@ -17,9 +17,21 @@
  */
 package org.wso2.vick.observability.api;
 
+import io.fabric8.kubernetes.api.model.ObjectMeta;
+import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinition;
+import io.fabric8.kubernetes.api.model.apiextensions.CustomResourceDefinitionList;
+import io.fabric8.kubernetes.api.model.apiextensions.DoneableCustomResourceDefinition;
+import io.fabric8.kubernetes.client.DefaultKubernetesClient;
+import io.fabric8.kubernetes.client.KubernetesClient;
+import io.fabric8.kubernetes.client.dsl.NonNamespaceOperation;
+import io.fabric8.kubernetes.client.dsl.Resource;
+import org.wso2.vick.observability.api.crd.CellCRD;
+import org.wso2.vick.observability.api.crd.CellCRDDoneable;
+import org.wso2.vick.observability.api.crd.CellCRDList;
 import org.wso2.vick.observability.api.model.CellInfo;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -33,11 +45,31 @@ import javax.ws.rs.core.Response;
 @Path("/kubernetes-details")
 public class KubernetesAPI {
     private Set<CellInfo> cellInfoMap = new HashSet<>();
+    private static final String CELL_CRD_NAME = "cells.vick.wso2.com";
 
     @GET
     @Path("/cells/namespaces")
     @Produces("application/json")
     public Response getCellNamespace() {
+        KubernetesClient client = new DefaultKubernetesClient();
+        CustomResourceDefinitionList crds = client.customResourceDefinitions().list();
+        List<CustomResourceDefinition> crdsItems = crds.getItems();
+        CustomResourceDefinition cellCRD = null;
+        for (CustomResourceDefinition crd : crdsItems) {
+            ObjectMeta metadata = crd.getMetadata();
+            if (metadata != null) {
+                String name = metadata.getName();
+                if (CELL_CRD_NAME.equals(name)) {
+                    cellCRD = crd;
+                    break;
+                }
+            }
+        }
+        if (cellCRD != null) {
+            NonNamespaceOperation<CellCRD, CellCRDList, CellCRDDoneable, Resource<CellCRD, CellCRDDoneable>> cellClient =
+                    client.customResources(cellCRD, CellCRD.class, CellCRDList.class, CellCRDDoneable.class);
+            CellCRDList cells = cellClient.list();
+        }
         return Response.ok().header("Access-Control-Allow-Origin", "*")
                 .header("Access-Control-Allow-Credentials", "true")
                 .header("Access-Control-Allow-Methods", "POST, GET, PUT, UPDATE, DELETE, OPTIONS, HEAD")
