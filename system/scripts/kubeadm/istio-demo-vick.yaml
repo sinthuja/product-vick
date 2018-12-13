@@ -520,7 +520,7 @@ data:
     #
     # Deprecated: mixer is using EDS
     mixerCheckServer: istio-policy.istio-system.svc.cluster.local:9091
-    mixerReportServer: istio-telemetry.istio-system.svc.cluster.local:9091
+    mixerReportServer: 192.168.56.1:9091
 
     # Unix Domain Socket through which envoy communicates with NodeAgent SDS to get
     # key/cert for mTLS. Use secret-mount files instead of SDS if set to empty.
