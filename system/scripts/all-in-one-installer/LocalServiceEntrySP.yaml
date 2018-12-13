@@ -1,7 +1,7 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: ServiceEntry
 metadata:
-  name: localSP
+  name: localsp
 spec:
   hosts:
   - 192.168.56.1
