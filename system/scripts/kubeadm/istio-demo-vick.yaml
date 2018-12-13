@@ -520,12 +520,12 @@ data:
     #
     # Deprecated: mixer is using EDS
     mixerCheckServer: istio-policy.istio-system.svc.cluster.local:9091
-    mixerReportServer: wso2sp-worker.vick-system.svc.cluster.local:9091
+    mixerReportServer: istio-telemetry.istio-system.svc.cluster.local:9091
 
     # Unix Domain Socket through which envoy communicates with NodeAgent SDS to get
-    # key/cert for mTLS. Use secret-mount files instead of SDS if set to empty. 
+    # key/cert for mTLS. Use secret-mount files instead of SDS if set to empty.
     sdsUdsPath: ""
-    
+
     # How frequently should Envoy fetch key/cert from NodeAgent.
     sdsRefreshDelay: 15s
 
@@ -572,7 +572,7 @@ data:
       concurrency: 0
       #
       # Zipkin trace collector
-      zipkinAddress: wso2sp-worker.vick-system:9411
+      zipkinAddress: zipkin.istio-system:9411
       #
       # Statsd metrics collector converts statsd metrics into Prometheus metrics.
       statsdUdpAddress: istio-statsd-prom-bridge.istio-system:9125
@@ -640,7 +640,7 @@ data:
             add:
             - NET_ADMIN
           restartPolicy: Always
-      
+
       containers:
       - name: istio-proxy
         image: [[ if (isset .ObjectMeta.Annotations "sidecar.istio.io/proxyImage") -]]
@@ -722,7 +722,7 @@ data:
         [[ else -]]
           requests:
             cpu: 10m
-          
+
         [[ end -]]
         volumeMounts:
         - mountPath: /etc/istio/proxy
@@ -1027,7 +1027,7 @@ metadata:
 
 ---
 # Source: istio/templates/crds.yaml
-# 
+#
 # these CRDs only make sense when pilot is enabled
 #
 apiVersion: apiextensions.k8s.io/v1beta1
@@ -1112,7 +1112,7 @@ spec:
     - istio-io
     - networking-istio-io
   scope: Namespaced
-  version: v1alpha3 
+  version: v1alpha3
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
@@ -2104,7 +2104,7 @@ spec:
   version: v1alpha2
 ---
 #
-# 
+#
 ---
 # Source: istio/charts/galley/templates/clusterrole.yaml
 apiVersion: rbac.authorization.k8s.io/v1beta1
@@ -2673,7 +2673,7 @@ spec:
         resources:
           requests:
             cpu: 10m
-          
+
         volumeMounts:
         - name: config-volume
           mountPath: /etc/statsd
@@ -2856,7 +2856,7 @@ spec:
           resources:
             requests:
               cpu: 10m
-            
+
       volumes:
       - name: certs
         secret:
@@ -2864,7 +2864,7 @@ spec:
       - name: config
         configMap:
           name: istio-galley-configuration
-      affinity:      
+      affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
@@ -2947,7 +2947,7 @@ spec:
           - --serviceCluster
           - istio-egressgateway
           - --zipkinAddress
-          - wso2sp-worker.vick-system:9411
+          - zipkin:9411
           - --statsdUdpAddress
           - istio-statsd-prom-bridge:9125
           - --proxyAdminPort
@@ -2959,7 +2959,7 @@ spec:
           resources:
             requests:
               cpu: 10m
-            
+
           env:
           - name: POD_NAME
             valueFrom:
@@ -3003,7 +3003,7 @@ spec:
         secret:
           secretName: "istio-egressgateway-ca-certs"
           optional: true
-      affinity:      
+      affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
@@ -3089,7 +3089,7 @@ spec:
           - --serviceCluster
           - istio-ingressgateway
           - --zipkinAddress
-          - wso2sp-worker.vick-system:9411
+          - zipkin:9411
           - --statsdUdpAddress
           - istio-statsd-prom-bridge:9125
           - --proxyAdminPort
@@ -3101,7 +3101,7 @@ spec:
           resources:
             requests:
               cpu: 10m
-            
+
           env:
           - name: POD_NAME
             valueFrom:
@@ -3145,7 +3145,7 @@ spec:
         secret:
           secretName: "istio-ingressgateway-ca-certs"
           optional: true
-      affinity:      
+      affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
@@ -3178,6 +3178,8 @@ spec:
                 operator: In
                 values:
                 - s390x
+---
+
 ---
 # Source: istio/charts/grafana/templates/deployment.yaml
 apiVersion: extensions/v1beta1
@@ -3224,11 +3226,11 @@ spec:
           resources:
             requests:
               cpu: 10m
-            
+
           volumeMounts:
           - name: data
             mountPath: /data/grafana
-      affinity:      
+      affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
@@ -3297,7 +3299,7 @@ spec:
           optional: true
       - name: uds-socket
         emptyDir: {}
-      affinity:      
+      affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
             nodeSelectorTerms:
@@ -3342,11 +3344,11 @@ spec:
           - unix:///sock/mixer.socket
           - --configStoreURL=k8s://
           - --configDefaultNamespace=istio-system
-          - --trace_zipkin_url=http://wso2sp-worker.vick-system:9411/api/v1/spans
+          - --trace_zipkin_url=http://zipkin:9411/api/v1/spans
         resources:
           requests:
             cpu: 10m
-          
+
         volumeMounts:
         - name: uds-socket
           mountPath: /sock
@@ -3389,7 +3391,7 @@ spec:
         resources:
           requests:
             cpu: 10m
-          
+
         volumeMounts:
         - name: istio-certs
           mountPath: /etc/certs
@@ -3439,7 +3441,7 @@ spec:
           - unix:///sock/mixer.socket
           - --configStoreURL=k8s://
           - --configDefaultNamespace=istio-system
-          - --trace_zipkin_url=http://wso2sp-worker.vick-system:9411/api/v1/spans
+          - --trace_zipkin_url=http://zipkin:9411/api/v1/spans
         resources:
           requests:
             cpu: 10m
