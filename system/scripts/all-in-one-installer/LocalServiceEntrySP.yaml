@@ -1,0 +1,13 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: localSP
+spec:
+  hosts:
+  - 192.168.56.1
+  ports:
+  - number: 9091
+    name: http2
+    protocol: HTTP2
+  resolution: DNS
+  location: MESH_EXTERNAL
