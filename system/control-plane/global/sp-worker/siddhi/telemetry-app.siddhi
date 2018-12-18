@@ -71,5 +71,5 @@ select
     e1.requestMethod,
     e1.httpResponseGroup,
     e1.responseTimeSec,
-    ifThenElse(e1.contextReporterKind == "outbound", e1.responseSizeBytes, e2.responseSizeBytes) as responseSizeBytes
+    e1.responseSizeBytes
 insert into ProcessedRequestsStream;
