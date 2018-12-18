@@ -24,7 +24,7 @@ spec:
   ports:
     # ports that this service should serve on
     -
-      name: 'https'
+      name: 'http'
       port: 3000
       protocol: TCP
 
