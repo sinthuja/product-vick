@@ -16,21 +16,17 @@
  * under the License.
  */
 
-import {Graph} from "./components/dependency-graph";
+import {Graph} from "react-d3-graph";
 import PropTypes from "prop-types";
 import React from "react";
 
 
 class DependencyGraph extends React.Component {
 
-    shouldComponentUpdate = (nextProps, nextState) => {
-        console.log(nextProps);
-        console.log(nextState);
-        return nextProps.reloadGraph;
-    };
+    shouldComponentUpdate = (nextProps, nextState) => nextProps.reloadGraph;
 
     render = () => {
-        if (this.props.data.nodes) {
+        if (this.props.data.nodes && this.props.data.nodes.length > 0) {
             return (
                 <Graph
                     id={this.props.id}
@@ -65,7 +61,8 @@ DependencyGraph.propTypes = {
     onMouseOverNode: PropTypes.func,
     onMouseOutNode: PropTypes.func,
     onMouseOverLink: PropTypes.func,
-    onMouseOutLink: PropTypes.func
+    onMouseOutLink: PropTypes.func,
+    reloadGraph: PropTypes.bool
 };
 
 export default DependencyGraph;
