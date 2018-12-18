@@ -33,7 +33,7 @@ spec:
     spec:
       containers:
       -
-        image: wso2vick/wso2sp-worker
+        image: sinthuja/wso2sp-worker
         name: wso2sp-worker
         imagePullPolicy: Always
         resources:
@@ -114,9 +114,6 @@ spec:
       - name: sp-worker-conf
         configMap:
           name: sp-worker-conf
- #     - name: sp-worker-bin
- #       configMap:
- #         name: sp-worker-bin
       - name: sp-worker-siddhi
         configMap:
           name: sp-worker-siddhi

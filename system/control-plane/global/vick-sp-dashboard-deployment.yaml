@@ -31,7 +31,7 @@ spec:
         pattern: wso2sp-pattern-distributed
     spec:
       containers:
-      - image: wso2vick/wso2sp-dashboard
+      - image: sinthuja/observability-portal
         name: wso2sp-status-dashboard
         imagePullPolicy: Always
         env:
@@ -49,7 +49,7 @@ spec:
 
         ports:
         -
-          containerPort: 9643
+          containerPort: 3000
           protocol: "TCP"
 
         volumeMounts:
@@ -57,7 +57,7 @@ spec:
           mountPath: "/home/wso2carbon/wso2-config-volume/conf/dashboard/"
         livenessProbe:
           tcpSocket:
-            port: 9643
+            port: 3000
           initialDelaySeconds: 300
           periodSeconds: 20
       imagePullSecrets:

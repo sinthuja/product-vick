@@ -35,4 +35,4 @@ spec:
       - path: /
         backend:
           serviceName: wso2sp-dashboard
-          servicePort: 9643
+          servicePort: 3000

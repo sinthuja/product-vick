@@ -9,7 +9,7 @@ metadata:
 spec:
   type: NodePort
   externalIPs:
-  - 172.17.17.100
+  - 192.168.56.10
   ports:
     - name: http
       port: 80

@@ -329,6 +329,6 @@
         <siddhi.io.http.version>1.0.41</siddhi.io.http.version>
 
          <!--Docker repo name - By default wso2vick-->
-        <docker.repo.name>wso2vick</docker.repo.name>
+        <docker.repo.name>sinthuja</docker.repo.name>
     </properties>
 </project>
