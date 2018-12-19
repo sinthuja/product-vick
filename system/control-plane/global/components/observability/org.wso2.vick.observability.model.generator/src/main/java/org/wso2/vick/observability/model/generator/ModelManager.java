@@ -17,6 +17,7 @@
  */
 package org.wso2.vick.observability.model.generator;
 
+import com.google.common.graph.EndpointPair;
 import com.google.common.graph.MutableNetwork;
 import com.google.common.graph.NetworkBuilder;
 import org.wso2.vick.observability.model.generator.exception.GraphStoreException;
@@ -25,7 +26,6 @@ import org.wso2.vick.observability.model.generator.internal.ServiceHolder;
 import org.wso2.vick.observability.model.generator.model.Edge;
 import org.wso2.vick.observability.model.generator.model.Model;
 
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -108,17 +108,30 @@ public class ModelManager {
         return dependencyGraph;
     }
 
-    public void moveLinks(Node fromNode, Node targetNode, String newEdgePrefix) {
-        List<String> edgesToRemove = new ArrayList<>(this.dependencyGraph.outEdges(fromNode));
-        for (String edgeName : edgesToRemove) {
-            Node outNode = this.dependencyGraph.incidentNodes(edgeName).target();
-            String newEdgeName = newEdgePrefix + Constants.LINK_SEPARATOR + Utils.getEdgePostFix(edgeName);
-            this.addLink(targetNode, outNode, newEdgeName);
-            this.dependencyGraph.removeEdge(edgeName);
+    public void moveLinks(Node targetNode, String newEdgePrefix, List<String> edgesToRemove, boolean moveOnlyTarget) {
+        if (edgesToRemove != null) {
+            for (String edgeName : edgesToRemove) {
+                try {
+                    EndpointPair<Node> endpointPair = this.dependencyGraph.incidentNodes(edgeName);
+                    if (endpointPair != null) {
+                        Node outNode = endpointPair.target();
+                        if (!moveOnlyTarget || outNode.equals(targetNode)) {
+                            String newEdgeName = newEdgePrefix + Constants.LINK_SEPARATOR
+                                    + Utils.getEdgePostFix(edgeName);
+                            this.addLink(targetNode, outNode, newEdgeName);
+                            this.dependencyGraph.removeEdge(edgeName);
+                        }
+                    }
+                } catch (Exception ignored) {
+                }
+            }
         }
     }
 
     public Model getGraph(long fromTime, long toTime) throws GraphStoreException {
+        if (!ServiceHolder.getPeriodicProcessor().isStarted()) {
+            ServiceHolder.getPeriodicProcessor().run();
+        }
         if (fromTime == 0 && toTime == 0) {
             return new Model(this.dependencyGraph.nodes(), Utils.getEdges(this.dependencyGraph.edges()));
         } else {
