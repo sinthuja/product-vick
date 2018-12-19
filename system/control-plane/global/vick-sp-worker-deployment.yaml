@@ -34,6 +34,7 @@ spec:
       containers:
       -
         image: sinthuja/wso2sp-worker
+        args: ["-debug", "5005"]
         name: wso2sp-worker
         imagePullPolicy: Always
         resources:

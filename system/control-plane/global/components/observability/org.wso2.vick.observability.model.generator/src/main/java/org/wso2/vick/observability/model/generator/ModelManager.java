@@ -25,6 +25,7 @@ import org.wso2.vick.observability.model.generator.internal.ServiceHolder;
 import org.wso2.vick.observability.model.generator.model.Edge;
 import org.wso2.vick.observability.model.generator.model.Model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -108,8 +109,8 @@ public class ModelManager {
     }
 
     public void moveLinks(Node fromNode, Node targetNode, String newEdgePrefix) {
-        Set<String> outEdges = this.dependencyGraph.outEdges(fromNode);
-        for (String edgeName : outEdges) {
+        List<String> edgesToRemove = new ArrayList<>(this.dependencyGraph.outEdges(fromNode));
+        for (String edgeName : edgesToRemove) {
             Node outNode = this.dependencyGraph.incidentNodes(edgeName).target();
             String newEdgeName = newEdgePrefix + Constants.LINK_SEPARATOR + Utils.getEdgePostFix(edgeName);
             this.addLink(targetNode, outNode, newEdgeName);
